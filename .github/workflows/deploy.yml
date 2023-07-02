@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - master
+  schedule:
+    - cron: "0 0 * * 0"
 
 permissions:
   contents: write
@@ -27,6 +29,7 @@ jobs:
         run: |
           npm clean-install --no-audit --no-fund --force
           CI='' npm run build
+          curl -X POST https://fountainheadschool.edupage.org/timetable/server/regulartt.js?__func=regularttGetData -H "Content-type: application/json" -d "{\"__args\":[null,\"99\"],\"__gsh\":\"00000000\"}" -o src/data.json
       - name: Commit files
         run: |
           rm -rf .git
