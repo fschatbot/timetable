@@ -15,7 +15,7 @@ const Subjects = DBTable.find((table) => table.id === "subjects").data_rows.map(
 	let difficulty = subject.name.match(/[HS]L/) ? subject.name.match(/[HS]L/)[0] : undefined;
 	let batch = subject.name.match(/\d/) ? Number(subject.name.match(/\d/)[0]) : undefined;
 	let id = subject.id;
-	return { name, difficulty, batch, id, fullName: subject.name, shortname: subject.short };
+	return { name, difficulty, batch, id, fullName: subject.name, shortname: subject.short.replace(/(\S)-\s/, "$1 - ") };
 });
 // const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
 const getLessonSchedule = (lessonid) => Cards.filter((card) => card.lessonid === Lessons.find((less) => less.subjectid === lessonid && less.classids.includes("-188")).id);
@@ -92,8 +92,7 @@ function Chips() {
 				// console.log(subject.name, name, subject.shortname);
 				return (
 					<div className="chip" key={slot}>
-						{name} {subject.difficulty} {subject.batch && "B"}
-						{subject.batch}
+						{subject.shortname}
 					</div>
 				);
 			})}
@@ -123,7 +122,7 @@ function Table() {
 	}, [slots]);
 
 	return (
-		<table className="table table-xs table-pin-rows table-pin-cols">
+		<table className="rounded-corners">
 			<thead>
 				<tr>
 					<th></th>
@@ -175,6 +174,7 @@ function App() {
 			<h1 className="text-3xl font-bold text-white">Timetable Generator</h1>
 			<Search />
 			<Chips />
+			<h1 className="text-2xl font-bold text-white mt-10">Grade 11 TimeTable</h1>
 			<Table />
 		</SlotContext.Provider>
 	);
