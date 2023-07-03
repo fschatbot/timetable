@@ -87,8 +87,8 @@ function Chips() {
 		<div className="chips">
 			{slots.map((slot) => {
 				let subject = Subjects.find((subject) => subject.id === slot);
-				let name = subject.name.split(" ").length > 1 ? subject.name.replace(/[a-z\s]/g, "") : subject.name;
-				name = subject.difficulty || subject.batch ? name : subject.shortname;
+				// let name = subject.name.split(" ").length > 1 ? subject.name.replace(/[a-z\s]/g, "") : subject.name;
+				// name = subject.difficulty || subject.batch ? name : subject.shortname;
 				// console.log(subject.name, name, subject.shortname);
 				return (
 					<div className="chip" key={slot}>
@@ -127,7 +127,7 @@ function Table() {
 				<tr>
 					<th></th>
 					{Heading.map((head) => (
-						<th>
+						<th key={head.starttime}>
 							<h1>{head.name}</h1>
 							<span>
 								{head.starttime} - {head.endtime}
@@ -136,27 +136,31 @@ function Table() {
 					))}
 				</tr>
 			</thead>
-			<tbody>{<TableRows table={table} />}</tbody>
+			{<TableBody table={table} />}
 		</table>
 	);
 }
 
-function TableRows({ table }) {
-	console.log(table);
+function TableBody({ table }) {
 	const rowNames = DBTable.find((table) => table.id === "days").data_rows.map((x) => x.name);
 
-	return rowNames.map((rowName, day) => (
-		<tr>
-			<th>{rowName}</th>
-			{Heading.map((head) => {
-				if (head.break) return <td className="break"></td>;
-				const lessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === +head.period);
-				if (lessons.length === 0) return <td>-</td>;
+	return (
+		<tbody>
+			{rowNames.map((rowName, day) => (
+				<tr key={day}>
+					<th>{rowName}</th>
+					{Heading.map((head, colIndex) => {
+						const tdKey = `${day},${colIndex}`;
+						if (head.break) return <td className="break" key={tdKey}></td>;
+						const lessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === +head.period);
+						if (lessons.length === 0) return <td key={tdKey}>-</td>;
 
-				return <td>{lessons.map((lesson) => lesson.subject.shortname).reduce((prev, curr) => [prev, <div className="divider" />, curr])}</td>;
-			})}
-		</tr>
-	));
+						return <td key={tdKey}>{lessons.map((lesson) => lesson.subject.shortname).reduce((prev, curr, i) => [prev, <div className="divider" key={i} />, curr])}</td>;
+					})}
+				</tr>
+			))}
+		</tbody>
+	);
 }
 
 function App() {
