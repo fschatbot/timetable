@@ -115,7 +115,7 @@ function Table() {
 
 		slots.forEach((id) => {
 			getLessonSchedule(id).forEach((less) => {
-				newTable.push({ ...less, day: less.days.indexOf("1") + 1, period: +less.period });
+				newTable.push({ ...less, day: less.days.indexOf("1") + 1, period: +less.period, getID: id, subject: Subjects.find((subject) => subject.id === id) });
 			});
 		});
 
@@ -149,14 +149,12 @@ function TableRows({ table }) {
 	return rowNames.map((rowName, day) => (
 		<tr>
 			<th>{rowName}</th>
-			{Heading.map((head, period) => {
+			{Heading.map((head) => {
 				if (head.break) return <td className="break"></td>;
-				const lessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === period);
-				if (period == 6 && day + 1 == 1) console.log(lessons);
-				if (lessons.length == 0) return <td>-</td>;
-				if (lessons.length == 1) return <td>{lessons[0].id}</td>;
-				// console.log(lessons);
-				return <td>{lessons.length}</td>;
+				const lessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === +head.period);
+				if (lessons.length === 0) return <td>-</td>;
+
+				return <td>{lessons.map((lesson) => lesson.subject.shortname).join(", ")}</td>;
 			})}
 		</tr>
 	));
