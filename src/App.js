@@ -9,7 +9,7 @@ const SlotContext = createContext(null);
 const DBTable = ResponseData.r.dbiAccessorRes.tables;
 const Lessons = DBTable.find((table) => table.id === "lessons").data_rows;
 const Cards = DBTable.find((table) => table.id === "cards").data_rows;
-const lesson = (id) => Lessons.filter((data) => data.subjectid === id);
+// const lesson = (id) => Lessons.filter((data) => data.subjectid === id);
 const Subjects = DBTable.find((table) => table.id === "subjects").data_rows.map((subject) => {
 	let name = subject.name.split("-")[0].trim();
 	let difficulty = subject.name.match(/[HS]L/) ? subject.name.match(/[HS]L/)[0] : undefined;
@@ -17,7 +17,7 @@ const Subjects = DBTable.find((table) => table.id === "subjects").data_rows.map(
 	let id = subject.id;
 	return { name, difficulty, batch, id, fullName: subject.name, shortname: subject.short };
 });
-const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
+// const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
 const getLessonSchedule = (lessonid) => Cards.filter((card) => card.lessonid === Lessons.find((less) => less.subjectid === lessonid && less.classids.includes("-188")).id);
 
 function Result({ subject }) {
@@ -120,7 +120,7 @@ function Table() {
 		});
 
 		setTable(newTable);
-	}, slots);
+	}, [slots]);
 
 	return (
 		<table className="table table-xs table-pin-rows table-pin-cols">
