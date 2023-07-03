@@ -153,7 +153,7 @@ function TableRows({ table }) {
 				const lessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === +head.period);
 				if (lessons.length === 0) return <td>-</td>;
 
-				return <td>{lessons.map((lesson) => lesson.subject.shortname).join(", ")}</td>;
+				return <td>{lessons.map((lesson) => lesson.subject.shortname).reduce((prev, curr) => [prev, <div className="divider" />, curr])}</td>;
 			})}
 		</tr>
 	));
