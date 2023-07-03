@@ -47,3 +47,19 @@ body,
 	@apply text-white border
 	border-slate-600 bg-slate-700 rounded-md px-3 py-1;
 }
+
+/* Table CSS */
+table {
+	@apply border border-collapse border-slate-500 rounded-md
+	text-white mt-10;
+}
+
+td,
+th {
+	@apply border border-slate-600 px-2
+	text-center;
+}
+
+thead th span {
+	@apply font-normal text-sm;
+}
