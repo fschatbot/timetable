@@ -164,7 +164,7 @@ function TableBody({ table }) {
 }
 
 function App() {
-	const [slots, setSlots] = useState(localStorage.getItem("timtable")?.split("|") || []);
+	const [slots, setSlots] = useState(localStorage.getItem("timtable")?.split("|") || "-103|-79|*41|-112|-104|-122".split("|"));
 
 	useEffect(() => {
 		localStorage.setItem("timtable", slots.join("|"));
