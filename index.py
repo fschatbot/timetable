@@ -46,6 +46,7 @@ end_of_month = start_of_month.replace(month=start_of_month.month+1) - timedelta(
 print('Calculated the date range')
 
 week = []
+NextSeven = []
 month = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
 all = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
 
@@ -68,11 +69,15 @@ for event in cal.walk('VEVENT'):
 	if start_of_month <= start.dt <= end_of_month:
 		month[day].append(strDate)
 	all[day].append(strDate)
+	if today <= start.dt and len(NextSeven) < 7:
+		NextSeven.append({'day': day, 'date': strDate})
 print('Parsed the Calendar Data')
 
 # Writing the files
 json.dump(week, open(f'{API_DIR}/week.json', 'w'))
 json.dump(week, open(f'{SRC_DIR}/week.json', 'w'))
+json.dump(NextSeven, open(f'{API_DIR}/NextSeven.json', 'w'))
+json.dump(NextSeven, open(f'{SRC_DIR}/NextSeven.json', 'w'))
 json.dump(month, open(f'{API_DIR}/month.json', 'w'))
 json.dump(all, open(f'{API_DIR}/all.json', 'w'))
 print('Saved the Calendar Data')
