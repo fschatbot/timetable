@@ -1,7 +1,7 @@
 body,
 #root {
 	@apply flex flex-col items-center
-	bg-slate-800 p-7;
+	bg-slate-800 pt-7;
 }
 
 .searchContainer {
@@ -42,21 +42,37 @@ body,
 
 .chips {
 	@apply mt-2
-	flex flex-row gap-2;
+	grid grid-flow-col grid-rows-2 gap-2;
 }
 .chip {
-	@apply text-white border
+	@apply text-white border text-center
 	border-slate-600 bg-slate-700 rounded-md px-3 py-1;
 }
+/* .chip + .chip {
+	@apply ml-2;
+} */
 
 /* Table CSS */
 
 thead th span {
-	@apply font-normal text-sm;
+	@apply font-normal text-sm text-slate-300;
 }
 
 tr {
-	@apply h-16;
+	@apply h-[4.5rem];
+}
+
+tr.active {
+	@apply rounded-xl bg-emerald-300/70;
+}
+
+td:first-child,
+th:first-child {
+	border-radius: 10px 0 0 10px;
+}
+td:last-child,
+th:last-child {
+	border-radius: 0 10px 10px 0;
 }
 
 td,
@@ -65,38 +81,43 @@ th {
 }
 
 td {
-	@apply py-2;
+	@apply py-2 relative;
 }
 
-th {
-	@apply bg-slate-600;
+thead th {
+	@apply border-b border-slate-600 min-w-[5rem] relative;
+}
+
+thead th:first-child::after {
+	@apply content-[''] right-0 bottom-0 top-1/2 bg-slate-600 w-[1px] absolute;
+}
+tbody th {
+	@apply border-r border-slate-600;
 }
 
 .divider {
 	@apply h-[1px] bg-slate-600 w-full my-1 mx-auto;
 }
 
-table.rounded-corners {
-	border-spacing: 0;
-	border-collapse: separate;
-
-	@apply text-white border border-slate-700 rounded-2xl mt-2 overflow-hidden;
+table {
+	@apply text-white mt-2 overflow-hidden;
 }
 
-/* Apply a border to the right of all but the last column */
-table.rounded-corners th:not(:last-child),
-table.rounded-corners td:not(:last-child) {
-	@apply border-r border-slate-700;
+td .sizing {
+	@apply opacity-0;
 }
 
-/* Apply a border to the bottom of all but the last row */
-table.rounded-corners > thead > tr:not(:last-child) > th,
-table.rounded-corners > thead > tr:not(:last-child) > td,
-table.rounded-corners > tbody > tr > th,
-table.rounded-corners > tbody > tr > td,
-table.rounded-corners > tr:not(:last-child) > td,
-table.rounded-corners > tr:not(:last-child) > th,
-table.rounded-corners > thead:not(:last-child),
-table.rounded-corners > tbody:not(:last-child) {
-	@apply border-t border-slate-700;
+td .sizing span,
+td .asthetic span {
+	@apply bg-slate-700 block rounded-xl py-1 px-2;
+}
+
+td .asthetic {
+	@apply absolute inset-0 p-[6px]
+	flex flex-col items-center justify-center;
+}
+
+td .asthetic span {
+	@apply flex-grow w-full flex-wrap
+	flex items-center justify-center;
 }

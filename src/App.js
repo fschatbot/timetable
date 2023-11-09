@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import "./App.css";
 import "./daisyUI.css";
-import ResponseData from "./data.json";
+import ResponseData from "./api/timetable.json";
+import NextSeven from "./api/NextSeven.json";
 import FuzzySearch from "fuzzy-search";
 
 const SlotContext = createContext(null);
@@ -19,6 +20,17 @@ const Subjects = DBTable.find((table) => table.id === "subjects").data_rows.map(
 });
 // const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
 const getLessonSchedule = (lessonid) => Cards.filter((card) => card.lessonid === Lessons.find((less) => less.subjectid === lessonid && less.classids.includes("-188")).id);
+
+// Getting the day from NextSeven for today
+function preset(preset, date) {
+	const t = (e) => ("0" + e).slice(-2);
+	return preset
+		.replace(/MM/g, t(date.getMonth() + 1))
+		.replace(/YYYY/g, date.getFullYear())
+		.replace(/DD/g, t(date.getDate()));
+}
+let today = preset("DD/MM/YYYY", new Date());
+let currDay = NextSeven.find((day) => day.date === today)?.day;
 
 function Result({ subject }) {
 	const { slots, removeSlot, addSlot } = useContext(SlotContext);
@@ -52,8 +64,9 @@ function Search() {
 	return (
 		<div className="searchContainer">
 			<div className="searchBox">
-				<input type="text" placeholder="Subject Name" ref={searchRef} onChange={updateResults} />
-				{searchRef.current?.value && (
+				<input type="text" placeholder="Subject Name..." ref={searchRef} onChange={updateResults} />
+
+				{searchRef.current?.value ? (
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -65,6 +78,10 @@ function Search() {
 							updateResults();
 						}}>
 						<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+					</svg>
+				) : (
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+						<path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
 					</svg>
 				)}
 			</div>
@@ -122,7 +139,7 @@ function Table() {
 	}, [slots]);
 
 	return (
-		<table className="rounded-corners">
+		<table>
 			<thead>
 				<tr>
 					<th></th>
@@ -147,7 +164,7 @@ function TableBody({ table }) {
 	return (
 		<tbody>
 			{rowNames.map((rowName, day) => (
-				<tr key={day}>
+				<tr key={day} className={`Day ${currDay}` === rowName ? "active" : undefined}>
 					<th>{rowName}</th>
 					{Heading.map((head, colIndex) => {
 						const tdKey = `${day},${colIndex}`;
@@ -155,7 +172,18 @@ function TableBody({ table }) {
 						const lessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === +head.period);
 						if (lessons.length === 0) return <td key={tdKey}>-</td>;
 
-						return <td key={tdKey}>{lessons.map((lesson) => lesson.subject.shortname).reduce((prev, curr, i) => [prev, <div className="divider" key={i} />, curr])}</td>;
+						const subjElem = lessons.map((lesson) => lesson.subject.shortname).join(" / ");
+
+						return (
+							<td key={tdKey}>
+								<div className="sizing">
+									<span>{subjElem}</span>
+								</div>
+								<div className="asthetic">
+									<span>{subjElem}</span>
+								</div>
+							</td>
+						);
 					})}
 				</tr>
 			))}
@@ -163,8 +191,34 @@ function TableBody({ table }) {
 	);
 }
 
+function Warning() {
+	return (
+		<div className="alert">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info flex-shrink-0 w-6 h-6">
+				<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+			</svg>
+			<span>Subject names change in backend occasionally. This may cause the subject selected above to be affected!</span>
+		</div>
+	);
+}
+
+function getStroageSlots() {
+	const StrSlots = localStorage.getItem("timtable") || "-122|-104|-112|-103|-79|*31";
+	const slots = StrSlots.split("|");
+
+	slots.forEach((slot, i) => {
+		if (!Subjects.find((subject) => subject.id === slot)) {
+			console.log("Invalid Slot ID:", slot);
+			// Remove the slot from the array
+			slots.splice(i, 1);
+		}
+	});
+
+	return slots;
+}
+
 function App() {
-	const [slots, setSlots] = useState(localStorage.getItem("timtable")?.split("|") || "-103|-79|*41|-112|-104|-122".split("|"));
+	const [slots, setSlots] = useState(getStroageSlots());
 
 	useEffect(() => {
 		localStorage.setItem("timtable", slots.join("|"));
@@ -180,6 +234,7 @@ function App() {
 			<Chips />
 			<h1 className="text-2xl font-bold text-white mt-10">Grade 11 TimeTable</h1>
 			<Table />
+			<Warning />
 		</SlotContext.Provider>
 	);
 }
