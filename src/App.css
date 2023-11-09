@@ -42,7 +42,7 @@ body,
 
 .chips {
 	@apply mt-2
-	grid grid-flow-col grid-rows-2 gap-2;
+	grid grid-cols-6 gap-2;
 }
 .chip {
 	@apply text-white border text-center

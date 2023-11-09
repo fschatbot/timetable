@@ -40,10 +40,16 @@ function Result({ subject }) {
 			<input
 				type="checkbox"
 				className="checkbox checkbox-sm"
-				defaultChecked={slots.includes(subject.id)}
+				defaultChecked={slots.includes(subject.shortname)}
 				name={subject.name}
 				id={subject.id}
-				onChange={() => (slots.includes(subject.id) ? removeSlot(subject.id) : addSlot(subject.id))}
+				onChange={() => {
+					if (slots.includes(subject.shortname)) {
+						removeSlot(subject.shortname);
+					} else {
+						addSlot(subject.shortname);
+					}
+				}}
 			/>
 			<label className="full" htmlFor={subject.id}>
 				{subject.name}
@@ -103,7 +109,7 @@ function Chips() {
 	return (
 		<div className="chips">
 			{slots.map((slot) => {
-				let subject = Subjects.find((subject) => subject.id === slot);
+				let subject = Subjects.find((subject) => subject.shortname === slot);
 				// let name = subject.name.split(" ").length > 1 ? subject.name.replace(/[a-z\s]/g, "") : subject.name;
 				// name = subject.difficulty || subject.batch ? name : subject.shortname;
 				// console.log(subject.name, name, subject.shortname);
@@ -129,9 +135,10 @@ function Table() {
 	useEffect(() => {
 		let newTable = [];
 
-		slots.forEach((id) => {
-			getLessonSchedule(id).forEach((less) => {
-				newTable.push({ ...less, day: less.days.indexOf("1") + 1, period: +less.period, getID: id, subject: Subjects.find((subject) => subject.id === id) });
+		slots.forEach((name) => {
+			const sub = Subjects.find((subject) => subject.shortname === name);
+			getLessonSchedule(sub.id).forEach((less) => {
+				newTable.push({ ...less, day: less.days.indexOf("1") + 1, period: +less.period, getID: sub.id, subject: Subjects.find((subject) => subject.id === sub.id) });
 			});
 		});
 
@@ -203,18 +210,21 @@ function Warning() {
 }
 
 function getStroageSlots() {
-	const StrSlots = localStorage.getItem("timtable") || "-122|-104|-112|-103|-79|*31";
+	const StrSlots = localStorage.getItem("timtable") || "ST|Club|Playtime|TOK|PS|EE";
 	const slots = StrSlots.split("|");
+	const newSlots = [];
 
 	slots.forEach((slot, i) => {
-		if (!Subjects.find((subject) => subject.id === slot)) {
+		let subject = Subjects.find((subject) => subject.id === slot || subject.shortname === slot);
+		if (!subject) {
 			console.log("Invalid Slot ID:", slot);
-			// Remove the slot from the array
-			slots.splice(i, 1);
-		}
+		} else if (subject.id === slot) {
+			newSlots.push(subject.shortname); // Legacy Support
+		} else newSlots.push(slot);
 	});
+	console.log(newSlots);
 
-	return slots;
+	return newSlots;
 }
 
 function App() {
