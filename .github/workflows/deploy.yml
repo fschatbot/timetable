@@ -27,7 +27,7 @@ jobs:
           node-version: 16.x
       - uses: actions/setup-python@v3
         with:
-          python-version: "3.11.5"
+          python-version: "3.11.6"
       - name: Create local changes
         run: |
           npm clean-install --no-audit --no-fund --force
