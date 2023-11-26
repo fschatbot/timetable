@@ -4,9 +4,10 @@ import icalendar
 import re
 import json
 from datetime import date, timedelta, datetime
+from rich import print as printr
 
 
-def print(*args): __builtins__.print(f'[{datetime.now().strftime("%H:%M:%S")}]', *args) # custom print function: [hh:mm:ss] message
+def print(*args): printr(f'[{datetime.now().strftime("%H:%M:%S")}]', *args) # custom print function: [hh:mm:ss] message
 
 print('Imported the libraries')
 
@@ -17,15 +18,27 @@ os.makedirs(SRC_DIR, exist_ok=True)
 print('Created the API directory')
 
 # Dealing with the timetable API and simplifying the data
+year = date.today().year
+DP_CALENDAR_ID = 110
+ttviewer = requests.post('https://fountainheadschool.edupage.org/timetable/server/ttviewer.js?__func=getTTViewerData', json={"__args":[None, year],"__gsh":"00000000"})
+if ttviewer.text.startswith('Error'):
+	print(f'[red bold]{ttviewer.text}! Restorting to the default value: {DP_CALENDAR_ID}')
+else:
+	ttviewerData = ttviewer.json()['r']['regular']['timetables']
+	DP_TTnum = [elem['tt_num'] for elem in ttviewerData if 'DP' in elem['text']]
+	DP_CALENDAR_ID = DP_CALENDAR_ID if not DP_TTnum else DP_TTnum[0]
 
-DP_CALENDAR_ID = 99
+print(f'Using the calendar ID: {DP_CALENDAR_ID}')
 resp = requests.post('https://fountainheadschool.edupage.org/timetable/server/regulartt.js?__func=regularttGetData', json={"__args":[None, str(DP_CALENDAR_ID)],"__gsh":"00000000"})
 data = resp.json()
-print('Fetched Timetable Data')
+if data['r'].get('error'):
+	print(f'[red bold]Error: {data["r"]["error"]}! Timetable will not be updated')
+else:
+	print('Fetched Timetable Data')
 
-json.dump(data, open(f'{API_DIR}/timetable.json', 'w'))
-json.dump(data, open(f'{SRC_DIR}/timetable.json', 'w'))
-print('Saved Timetable Data')
+	json.dump(data, open(f'{API_DIR}/timetable.json', 'w'))
+	json.dump(data, open(f'{SRC_DIR}/timetable.json', 'w'))
+	print('Saved Timetable Data')
 
 # Dealing with the google calendar to create the weekly, monthly and all event file with the date and their days
 ical_url = 'https://calendar.google.com/calendar/ical/fountainheadschools.org_0emneups26ttn44bkg00lpji7s%40group.calendar.google.com/public/basic.ics'
