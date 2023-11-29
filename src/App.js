@@ -20,7 +20,10 @@ const Subjects = DBTable.find((table) => table.id === "subjects").data_rows.map(
 	return { name, difficulty, batch, id, fullName: subject.name, shortname: subject.short.replace(/(\S)-\s/, "$1 - ") };
 });
 const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
-const getLessonSchedule = (lessonid) => Cards.filter((card) => card.lessonid === Lessons.find((less) => less.subjectid === lessonid && less.classids.includes("-188")).id);
+const getLessonSchedule = (lessonid) => {
+	let lessons = Lessons.filter((less) => less.subjectid === lessonid && less.classids.includes("-188")).map((less) => less.id);
+	return Cards.filter((card) => lessons.includes(card.lessonid));
+};
 
 if (process.env.NODE_ENV === "development") {
 	const variables = { ResponseData, NextSeven, DBTable, Lessons, Cards, Subjects, Teachers, getLessonSchedule };
@@ -229,7 +232,8 @@ function getStroageSlots() {
 			newSlots.push(subject.shortname); // Legacy Support
 		} else newSlots.push(slot);
 	});
-	console.log(newSlots);
+	if (process.env.NODE_ENV === "development") console.log(newSlots);
+	newSlots.sort();
 
 	return newSlots;
 }
