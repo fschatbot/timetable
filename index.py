@@ -9,36 +9,36 @@ from rich import print as printr
 
 def print(*args): printr(f'[{datetime.now().strftime("%H:%M:%S")}]', *args) # custom print function: [hh:mm:ss] message
 
-print('Imported the libraries')
+print('[+] Imported the libraries')
 
 API_DIR = 'public/api'
 SRC_DIR = 'src/api'
 os.makedirs(API_DIR, exist_ok=True)
 os.makedirs(SRC_DIR, exist_ok=True)
-print('Created the API directory')
+print('[+] Created the API directory')
 
 # Dealing with the timetable API and simplifying the data
 year = date.today().year
 DP_CALENDAR_ID = 110
 ttviewer = requests.post('https://fountainheadschool.edupage.org/timetable/server/ttviewer.js?__func=getTTViewerData', json={"__args":[None, year],"__gsh":"00000000"})
 if ttviewer.text.startswith('Error'):
-	print(f'[red bold]{ttviewer.text}! Restorting to the default value: {DP_CALENDAR_ID}')
+	print(f'[red bold][-] {ttviewer.text}! Restorting to the default value: {DP_CALENDAR_ID}')
 else:
 	ttviewerData = ttviewer.json()['r']['regular']['timetables']
 	DP_TTnum = [elem['tt_num'] for elem in ttviewerData if 'DP' in elem['text']]
 	DP_CALENDAR_ID = DP_CALENDAR_ID if not DP_TTnum else DP_TTnum[0]
 
-print(f'Using the calendar ID: {DP_CALENDAR_ID}')
+print(f'[+] Using the calendar ID: {DP_CALENDAR_ID}')
 resp = requests.post('https://fountainheadschool.edupage.org/timetable/server/regulartt.js?__func=regularttGetData', json={"__args":[None, str(DP_CALENDAR_ID)],"__gsh":"00000000"})
 data = resp.json()
 if data['r'].get('error'):
-	print(f'[red bold]Error: {data["r"]["error"]}! Timetable will not be updated')
+	print(f'[red bold][-] Error: {data["r"]["error"]}! Timetable will not be updated')
 else:
-	print('Fetched Timetable Data')
+	print('[+] Fetched Timetable Data')
 
 	json.dump(data, open(f'{API_DIR}/timetable.json', 'w'))
 	json.dump(data, open(f'{SRC_DIR}/timetable.json', 'w'))
-	print('Saved Timetable Data')
+	print('[+] Saved Timetable Data')
 
 # Dealing with the google calendar to create the weekly, monthly and all event file with the date and their days
 ical_url = 'https://calendar.google.com/calendar/ical/fountainheadschools.org_0emneups26ttn44bkg00lpji7s%40group.calendar.google.com/public/basic.ics'
@@ -46,9 +46,9 @@ ical_url = 'https://calendar.google.com/calendar/ical/fountainheadschools.org_0e
 dayRegexr = r'^D[1-6]$'
 
 resp = requests.get(ical_url).text
-print('Fetched Calendar Data')
+print('[+] Fetched Calendar Data')
 cal = icalendar.Calendar.from_ical(resp)
-print('Processed Calendar Data')
+print('[+] Parsed Calendar Data')
 
 today = date.today()
 start_of_week = today - timedelta(days=today.weekday())
@@ -56,7 +56,7 @@ end_of_week = start_of_week + timedelta(days=6)
 
 start_of_month = today.replace(day=1)
 end_of_month = start_of_month.replace(month=start_of_month.month+1) - timedelta(days=1)
-print('Calculated the date range')
+print('[+] Calculated the date range')
 
 week = []
 NextSeven = []
@@ -84,7 +84,7 @@ for event in cal.walk('VEVENT'):
 	all[day].append(strDate)
 	if today <= start.dt and len(NextSeven) < 7:
 		NextSeven.append({'day': day, 'date': strDate})
-print('Parsed the Calendar Data')
+print('[+] Processed the Calendar Data')
 
 # Writing the files
 json.dump(week, open(f'{API_DIR}/week.json', 'w'))
@@ -93,4 +93,4 @@ json.dump(NextSeven, open(f'{API_DIR}/NextSeven.json', 'w'))
 json.dump(NextSeven, open(f'{SRC_DIR}/NextSeven.json', 'w'))
 json.dump(month, open(f'{API_DIR}/month.json', 'w'))
 json.dump(all, open(f'{API_DIR}/all.json', 'w'))
-print('Saved the Calendar Data')
+print('[+] Saved the Calendar Data')
