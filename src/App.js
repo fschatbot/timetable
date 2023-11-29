@@ -5,8 +5,9 @@ import FuzzySearch from "fuzzy-search";
 
 const SlotContext = createContext(null);
 
-const ResponseData = await fetch("./timetable/api/timetable.json").then((res) => res.json());
-const NextSeven = await fetch("./timetable/api/NextSeven.json").then((res) => res.json());
+const apiUrl = process.env.NODE_ENV === "development" ? "./timetable/api" : "./api";
+const ResponseData = await fetch(`${apiUrl}/timetable.json`).then((res) => res.json());
+const NextSeven = await fetch(`${apiUrl}/NextSeven.json`).then((res) => res.json());
 
 const DBTable = ResponseData.r.dbiAccessorRes.tables;
 const Lessons = DBTable.find((table) => table.id === "lessons").data_rows;
