@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import "./App.css";
 import "./daisyUI.css";
-import ResponseData from "./api/timetable.json";
-import NextSeven from "./api/NextSeven.json";
 import FuzzySearch from "fuzzy-search";
 
 const SlotContext = createContext(null);
+
+const ResponseData = await fetch("./timetable/api/timetable.json").then((res) => res.json());
+const NextSeven = await fetch("./timetable/api/NextSeven.json").then((res) => res.json());
 
 const DBTable = ResponseData.r.dbiAccessorRes.tables;
 const Lessons = DBTable.find((table) => table.id === "lessons").data_rows;
@@ -18,8 +19,14 @@ const Subjects = DBTable.find((table) => table.id === "subjects").data_rows.map(
 	let id = subject.id;
 	return { name, difficulty, batch, id, fullName: subject.name, shortname: subject.short.replace(/(\S)-\s/, "$1 - ") };
 });
-// const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
+const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
 const getLessonSchedule = (lessonid) => Cards.filter((card) => card.lessonid === Lessons.find((less) => less.subjectid === lessonid && less.classids.includes("-188")).id);
+
+if (process.env.NODE_ENV === "development") {
+	const variables = { ResponseData, NextSeven, DBTable, Lessons, Cards, Subjects, Teachers, getLessonSchedule };
+	for (let key in variables) window[key] = variables[key];
+	console.log("%cDevelopment Mode Detected! Variables Exposed!", "color: cyan");
+}
 
 // Getting the day from NextSeven for today
 function preset(preset, date) {
