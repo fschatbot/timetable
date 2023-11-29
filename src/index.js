@@ -9,3 +9,5 @@ root.render(
 		<App />
 	</React.StrictMode>
 );
+
+console.log("%cMade By【Alpha_Wolf_80】", "color:#2dc9ac;font-weight:900;");
