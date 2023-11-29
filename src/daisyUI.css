@@ -1,102 +1,75 @@
 /* These are comopoents from daisyUI  */
+/* Directly implementing daisy created problems I wasn't ready to deal with */
 
 :root {
 	color-scheme: dark;
-	--pf: 262 80% 43%;
-	--sf: 316 70% 43%;
-	--af: 175 70% 34%;
-	--in: 198 93% 60%;
-	--su: 158 64% 52%;
-	--wa: 43 96% 56%;
-	--er: 0 91% 71%;
-	--inc: 198 100% 12%;
-	--suc: 158 100% 10%;
-	--wac: 43 100% 11%;
-	--erc: 0 100% 14%;
-	--rounded-box: 1rem;
-	--rounded-btn: 0.5rem;
-	--rounded-badge: 1.9rem;
-	--animation-btn: 0.25s;
-	--animation-input: 0.2s;
-	--btn-text-case: uppercase;
-	--btn-focus-scale: 0.95;
-	--border-btn: 1px;
-	--tab-border: 1px;
-	--tab-radius: 0.5rem;
-	--p: 262 80% 50%;
-	--pc: 0 0% 100%;
-	--s: 316 70% 50%;
-	--sc: 0 0% 100%;
-	--a: 175 70% 41%;
-	--ac: 0 0% 100%;
-	--n: 213 18% 20%;
-	--nf: 212 17% 17%;
-	--nc: 220 13% 69%;
-	--b1: 212 18% 14%;
-	--b2: 213 18% 12%;
-	--b3: 213 18% 10%;
-	--bc: 220 13% 69%;
+	--fallback-b1: #1d232a;
+	--fallback-b2: #191e24;
+	--fallback-bc: #a6adbb;
+	--fallback-in: #00b3f0;
+	--fallback-inc: #000000;
 }
 
 .checkbox {
 	flex-shrink: 0;
-	--chkbg: var(--bc);
-	--chkfg: var(--b1);
+	--chkbg: var(--fallback-bc);
+	--chkfg: var(--fallback-b1);
 	height: 1.5rem;
 	width: 1.5rem;
 	cursor: pointer;
 	-webkit-appearance: none;
+	-moz-appearance: none;
 	appearance: none;
-	border-width: 1px;
-	border-color: hsl(var(--bc) / var(--tw-border-opacity));
-	--tw-border-opacity: 0.2;
 	border-radius: var(--rounded-btn, 0.5rem);
+	border-width: 1px;
+	border-color: var(--fallback-bc);
+	--tw-border-opacity: 0.2;
 }
 
 .checkbox:focus-visible {
 	outline-style: solid;
 	outline-width: 2px;
 	outline-offset: 2px;
-	outline-color: hsl(var(--bc) / 1);
+	outline-color: var(--fallback-bc);
 }
 
 .checkbox:checked,
 .checkbox[checked="true"],
 .checkbox[aria-checked="true"] {
 	--tw-bg-opacity: 1;
-	background-color: hsl(var(--bc) / var(--tw-bg-opacity));
+	background-color: var(--fallback-bc);
 	background-repeat: no-repeat;
-	animation: checkmark var(--animation-input, 0.2s) ease-in-out;
-	background-image: linear-gradient(-45deg, transparent 65%, hsl(var(--chkbg)) 65.99%), linear-gradient(45deg, transparent 75%, hsl(var(--chkbg)) 75.99%),
-		linear-gradient(-45deg, hsl(var(--chkbg)) 40%, transparent 40.99%), linear-gradient(45deg, hsl(var(--chkbg)) 30%, hsl(var(--chkfg)) 30.99%, hsl(var(--chkfg)) 40%, transparent 40.99%),
-		linear-gradient(-45deg, hsl(var(--chkfg)) 50%, hsl(var(--chkbg)) 50.99%);
+	animation: checkmark var(--animation-input, 0.2s) ease-out;
+	background-image: linear-gradient(-45deg, transparent 65%, var(--chkbg) 65.99%), linear-gradient(45deg, transparent 75%, var(--chkbg) 75.99%),
+		linear-gradient(-45deg, var(--chkbg) 40%, transparent 40.99%), linear-gradient(45deg, var(--chkbg) 30%, var(--chkfg) 30.99%, var(--chkfg) 40%, transparent 40.99%),
+		linear-gradient(-45deg, var(--chkfg) 50%, var(--chkbg) 50.99%);
 }
 
 .checkbox:indeterminate {
 	--tw-bg-opacity: 1;
-	background-color: hsl(var(--bc) / var(--tw-bg-opacity));
+	background-color: var(--fallback-bc, oklch(var(--bc) / var(--tw-bg-opacity)));
 	background-repeat: no-repeat;
-	animation: checkmark var(--animation-input, 0.2s) ease-in-out;
-	background-image: linear-gradient(90deg, transparent 80%, hsl(var(--chkbg)) 80%), linear-gradient(-90deg, transparent 80%, hsl(var(--chkbg)) 80%),
-		linear-gradient(0deg, hsl(var(--chkbg)) 43%, hsl(var(--chkfg)) 43%, hsl(var(--chkfg)) 57%, hsl(var(--chkbg)) 57%);
+	animation: checkmark var(--animation-input, 0.2s) ease-out;
+	background-image: linear-gradient(90deg, transparent 80%, var(--chkbg) 80%), linear-gradient(-90deg, transparent 80%, var(--chkbg) 80%),
+		linear-gradient(0deg, var(--chkbg) 43%, var(--chkfg) 43%, var(--chkfg) 57%, var(--chkbg) 57%);
 }
 
-.checkbox-xs {
+[type="checkbox"].checkbox-xs {
 	height: 1rem;
 	width: 1rem;
 }
 
-.checkbox-sm {
+[type="checkbox"].checkbox-sm {
 	height: 1.25rem;
 	width: 1.25rem;
 }
 
-.checkbox-md {
+[type="checkbox"].checkbox-md {
 	height: 1.5rem;
 	width: 1.5rem;
 }
 
-.checkbox-lg {
+[type="checkbox"].checkbox-lg {
 	height: 2rem;
 	width: 2rem;
 }
@@ -110,15 +83,15 @@
 	justify-items: center;
 	gap: 1rem;
 	text-align: center;
+	border-radius: 1rem;
 	border-width: 1px;
 	--tw-border-opacity: 1;
-	border-color: hsl(var(--b2) / var(--tw-border-opacity));
+	border-color: var(--fallback-b2);
 	padding: 1rem;
 	--tw-text-opacity: 1;
-	color: hsl(var(--bc) / var(--tw-text-opacity));
-	border-radius: var(--rounded-box, 1rem);
-	--alert-bg: hsl(var(--b2));
-	--alert-bg-mix: hsl(var(--b1));
+	color: var(--fallback-bc);
+	--alert-bg: var(--fallback-b2);
+	--alert-bg-mix: var(--fallback-b1);
 	background-color: var(--alert-bg);
 }
 
@@ -127,18 +100,17 @@
 		grid-auto-flow: column;
 		grid-template-columns: auto minmax(auto, 1fr);
 		justify-items: start;
-		text-align: left;
+		text-align: start;
 	}
 }
-
 .alert-info {
-	border-color: hsl(var(--in) / 0.2);
+	border-color: var(--fallback-in);
 	--tw-text-opacity: 1;
-	color: hsl(var(--inc) / var(--tw-text-opacity));
-	--alert-bg: hsl(var(--in));
-	--alert-bg-mix: hsl(var(--b1));
+	color: var(--fallback-inc);
+	--alert-bg: var(--fallback-in);
+	--alert-bg-mix: var(--fallback-b1);
 }
 
 .stroke-info {
-	stroke: hsl(var(--in) / 1);
+	stroke: var(--fallback-in);
 }
