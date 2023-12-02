@@ -82,7 +82,7 @@ all = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
 for event in sorted(events, key=lambda x: x['date']):
 	day = event['day']
 	startDt = event['date']
-	strDate = event['date'].strftime('%Y-%m-%d')
+	strDate = event['date'].strftime('%d/%m/%Y')
 	# Adding the event to the week, month and all list
 	if start_of_week <= startDt <= end_of_week:
 		week.append({'day': day, 'date': strDate})
