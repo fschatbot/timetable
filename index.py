@@ -5,6 +5,7 @@ import re
 import json
 from datetime import date, timedelta, datetime
 from rich import print as printr
+from calendar import monthrange
 
 
 def print(*args): printr(f'[{datetime.now().strftime("%H:%M:%S")}]', *args) # custom print function: [hh:mm:ss] message
@@ -55,13 +56,10 @@ start_of_week = today - timedelta(days=today.weekday())
 end_of_week = start_of_week + timedelta(days=6)
 
 start_of_month = today.replace(day=1)
-end_of_month = start_of_month.replace(month=start_of_month.month+1) - timedelta(days=1)
+end_of_month = today.replace(day=monthrange(today.year, today.month)[1])
 print('[+] Calculated the date range')
 
-week = []
-NextSeven = []
-month = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
-all = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
+events = []
 
 for event in cal.walk('VEVENT'):
 	if not re.match(dayRegexr, event.get('SUMMARY', '')): continue # Remove all without the D[1-6] name
@@ -72,18 +70,28 @@ for event in cal.walk('VEVENT'):
 	end = event.get('DTEND')
 	summary = event.get('SUMMARY')
 
-	# Getting the important bits
-	day = summary[1]
-	strDate = start.dt.strftime('%d/%m/%Y')
+	events.append({'day': summary[1], 'date': start.dt})
 
+print('[+] Extracted Important Calendar Data')
+
+week = []
+NextSeven = []
+month = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
+all = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
+
+for event in sorted(events, key=lambda x: x['date']):
+	day = event['day']
+	startDt = event['date']
+	strDate = event['date'].strftime('%Y-%m-%d')
 	# Adding the event to the week, month and all list
-	if start_of_week <= start.dt <= end_of_week:
+	if start_of_week <= startDt <= end_of_week:
 		week.append({'day': day, 'date': strDate})
-	if start_of_month <= start.dt <= end_of_month:
+	if start_of_month <= startDt <= end_of_month:
 		month[day].append(strDate)
 	all[day].append(strDate)
-	if today <= start.dt and len(NextSeven) < 7:
+	if today <= startDt and len(NextSeven) < 7:
 		NextSeven.append({'day': day, 'date': strDate})
+
 print('[+] Processed the Calendar Data')
 
 # Writing the files
@@ -94,3 +102,11 @@ json.dump(NextSeven, open(f'{SRC_DIR}/NextSeven.json', 'w'))
 json.dump(month, open(f'{API_DIR}/month.json', 'w'))
 json.dump(all, open(f'{API_DIR}/all.json', 'w'))
 print('[+] Saved the Calendar Data')
+
+# Printing Some Stats
+print()
+print(f'[~] Working day this week: {len(week)}')
+print(f'[~] Working day this month: {sum(len(day) for day in month.values())}')
+print(f'[~] Total Number of working days: {sum(len(day) for day in all.values())}')
+print()
+print('[+] Done!')
