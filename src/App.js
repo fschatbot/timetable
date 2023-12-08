@@ -187,13 +187,19 @@ function TableBody({ table }) {
 					{Heading.map((head, colIndex) => {
 						const tdKey = `${day},${colIndex}`;
 						if (head.break) return <td className="break" key={tdKey}></td>;
+						const Llessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === +head.period - 1);
 						const lessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === +head.period);
+						const Nlessons = table.filter((lesson) => lesson.day === day + 1 && lesson.period === +head.period + 1);
 						if (lessons.length === 0) return <td key={tdKey}>-</td>;
 
+						const LsubjElem = Llessons.map((lesson) => lesson.subject.shortname).join(" / ");
 						const subjElem = lessons.map((lesson) => lesson.subject.shortname).join(" / ");
+						const NsubjElem = Nlessons.map((lesson) => lesson.subject.shortname).join(" / ");
 
-						return (
-							<td key={tdKey}>
+						// If next slot is equal to this slot then increase the colspan
+						// If last slot is equal to this slot then no render as its already rendered as a bigger block
+						return LsubjElem === subjElem ? undefined : (
+							<td key={tdKey} colSpan={NsubjElem === subjElem ? 2 : 1}>
 								<div className="sizing">
 									<span>{subjElem}</span>
 								</div>
