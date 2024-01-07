@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/timetable/static/css/main.2567e98a.css",
+    "main.js": "/timetable/static/js/main.aa01bf20.js",
+    "index.html": "/timetable/index.html",
+    "main.2567e98a.css.map": "/timetable/static/css/main.2567e98a.css.map",
+    "main.aa01bf20.js.map": "/timetable/static/js/main.aa01bf20.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2567e98a.css",
+    "static/js/main.aa01bf20.js"
+  ]
+}
