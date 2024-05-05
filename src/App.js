@@ -22,7 +22,7 @@ const Subjects = DBTable.find((table) => table.id === "subjects").data_rows.map(
 });
 const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
 const getLessonSchedule = (lessonid) => {
-	let lessons = Lessons.filter((less) => less.subjectid === lessonid && less.classids.includes("-188")).map((less) => less.id);
+	let lessons = Lessons.filter((less) => less.subjectid === lessonid && less.classids.includes(localStorage.getItem("grade") === "1" ? "-188" : "-189")).map((less) => less.id);
 	return Cards.filter((card) => lessons.includes(card.lessonid));
 };
 
@@ -135,7 +135,10 @@ function Chips() {
 }
 
 const Periods = DBTable.find((table) => table.id === "periods").data_rows;
-const Breaks = DBTable.find((table) => table.id === "breaks").data_rows;
+const Breaks = DBTable.find((table) => table.id === "breaks").data_rows.map((data) => {
+	data.break = true;
+	return data;
+});
 const Heading = [...Periods, ...Breaks].sort((a, b) => a.starttime.split(":")[0] * 60 + +a.starttime.split(":")[1] - (b.starttime.split(":")[0] * 60 + +b.starttime.split(":")[1])); // The item.startTime should be greater than the previous items.endTime;
 
 function Table() {
@@ -227,7 +230,7 @@ function Warning() {
 }
 
 function getStroageSlots() {
-	const StrSlots = localStorage.getItem("timtable") || "ST|Club|Playtime|TOK|PS|EE";
+	const StrSlots = localStorage.getItem(`timetable-G1${localStorage.getItem("grade") || 1}`) || "ST|Club|Playtime|TOK|PS|EE";
 	const slots = StrSlots.split("|");
 	const newSlots = [];
 
@@ -245,11 +248,27 @@ function getStroageSlots() {
 	return newSlots;
 }
 
+function GradeSelector() {
+	const grade = localStorage.getItem("grade") || 1;
+	const setGrade = (grade) => {
+		localStorage.setItem("grade", grade);
+		window.location.reload();
+	};
+
+	return (
+		<div className="gradeSelector">
+			<button onClick={() => setGrade(1)}>Grade 11</button>
+			<button onClick={() => setGrade(2)}>Grade 12</button>
+			<div className="selector" data-grade={grade} />
+		</div>
+	);
+}
+
 function App() {
 	const [slots, setSlots] = useState(getStroageSlots());
 
 	useEffect(() => {
-		localStorage.setItem("timtable", slots.join("|"));
+		localStorage.setItem(`timetable-G1${localStorage.getItem("grade") || 1}`, slots.join("|"));
 	}, [slots]);
 
 	const addSlot = (id) => setSlots((prev) => [...prev, id]);
@@ -258,7 +277,10 @@ function App() {
 	return (
 		<SlotContext.Provider value={{ slots, setSlots, addSlot, removeSlot }}>
 			<h1 className="text-3xl font-bold text-white">Timetable Generator</h1>
-			<Search />
+			<div className="flex flex-row mt-5 gap-2">
+				<GradeSelector />
+				<Search />
+			</div>
 			<Chips />
 			<h1 className="text-2xl font-bold text-white mt-10">Grade 11 TimeTable</h1>
 			<Table />

@@ -9,7 +9,7 @@ on:
     paths-ignore:
       - README.md
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: "30 15 * * 5" # every Friday at 3:30 PM
 
 permissions:
   contents: write
@@ -26,13 +26,13 @@ jobs:
           fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 20.x
       - uses: actions/setup-python@v3
         with:
-          python-version: "3.11.6"
+          python-version: "3.11.9"
       - name: Create local changes
         run: |
-          npm clean-install --no-audit --no-fund --force
+          npm clean-install --no-audit --no-fund
           pip install -r requirements.txt -q
           python index.py
           CI='' npm run build

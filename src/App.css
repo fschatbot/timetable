@@ -5,7 +5,7 @@ body,
 }
 
 .searchContainer {
-	@apply w-[30rem] mt-5 relative;
+	@apply w-[30rem] relative;
 }
 
 .searchBox {
@@ -120,4 +120,27 @@ td .asthetic {
 td .asthetic span {
 	@apply flex-grow w-full flex-wrap
 	flex items-center justify-center;
+}
+
+.gradeSelector {
+	@apply text-white border text-center
+	flex flex-row relative gap-3 overflow-clip
+	border-slate-600 bg-slate-700 rounded-lg px-3;
+}
+
+.gradeSelector button {
+	@apply z-10;
+}
+
+.gradeSelector .selector {
+	@apply absolute w-1/2 bg-slate-600 inset-y-0 rounded-sm
+	z-0;
+}
+
+.gradeSelector .selector[data-grade="1"] {
+	@apply left-0;
+}
+
+.gradeSelector .selector[data-grade="2"] {
+	@apply right-0;
 }

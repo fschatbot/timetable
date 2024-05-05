@@ -6,7 +6,8 @@ import json
 from datetime import date, timedelta, datetime
 from rich import print as printr
 from calendar import monthrange
-
+from requests import exceptions
+from time import sleep
 
 def print(*args): printr(f'[{datetime.now().strftime("%H:%M:%S")}]', *args) # custom print function: [hh:mm:ss] message
 
@@ -21,15 +22,21 @@ print('[+] Created the API directory')
 # Dealing with the timetable API and simplifying the data
 year = date.today().year
 DP_CALENDAR_ID = 110
-ttviewer = requests.post('https://fountainheadschool.edupage.org/timetable/server/ttviewer.js?__func=getTTViewerData', json={"__args":[None, year],"__gsh":"00000000"})
-if ttviewer.text.startswith('Error'):
-	print(f'[red bold][-] {ttviewer.text}! Restorting to the default value: {DP_CALENDAR_ID}')
-else:
-	ttviewerData = ttviewer.json()['r']['regular']['timetables']
-	DP_TTnum = [elem['tt_num'] for elem in ttviewerData if 'DP' in elem['text']]
-	DP_CALENDAR_ID = DP_CALENDAR_ID if not DP_TTnum else DP_TTnum[0]
 
-print(f'[+] Using the calendar ID: {DP_CALENDAR_ID}')
+try:
+	ttviewer = requests.post('https://fountainheadschool.edupage.org/timetable/server/ttviewer.js?__func=getTTViewerData', json={"__args":[None, year],"__gsh":"00000000"})
+
+	if ttviewer.text.startswith('Error'):
+		print(f'[red bold][-] {ttviewer.text}! Restorting to the default value: {DP_CALENDAR_ID}')
+	else:
+		ttviewerData = ttviewer.json()['r']['regular']['timetables']
+		DP_TTnum = [elem['tt_num'] for elem in ttviewerData if 'DP' in elem['text']]
+		DP_CALENDAR_ID = DP_CALENDAR_ID if not DP_TTnum else DP_TTnum[0]
+		print(f'[+] Using the calendar ID: {DP_CALENDAR_ID}')
+except exceptions.ConnectionError:
+	print(f'[red bold][-] Connection Error! Restorting to the default value: {DP_CALENDAR_ID}')
+
+
 resp = requests.post('https://fountainheadschool.edupage.org/timetable/server/regulartt.js?__func=regularttGetData', json={"__args":[None, str(DP_CALENDAR_ID)],"__gsh":"00000000"})
 data = resp.json()
 if data['r'].get('error'):
