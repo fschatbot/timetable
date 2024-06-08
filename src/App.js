@@ -284,7 +284,7 @@ function App() {
 				<Search />
 			</div>
 			<Chips />
-			<h1 className="text-2xl font-bold text-white mt-10">Grade 11 TimeTable</h1>
+			<h1 className="text-2xl font-bold text-white mt-10">Grade 1{localStorage.getItem("grade") || 1} TimeTable</h1>
 			<Table />
 			<Warning />
 		</SlotContext.Provider>
