@@ -20,14 +20,16 @@ const Subjects = DBTable.find((table) => table.id === "subjects").data_rows.map(
 	let id = subject.id;
 	return { name, difficulty, batch, id, fullName: subject.name, shortname: subject.short.replace(/(\S)-\s/, "$1 - ") };
 });
+const Classes = DBTable.find((table) => table.id === "classes").data_rows.reduce((acc, classData) => ({ ...acc, [classData.name.toLowerCase().trim()]: classData.id }), {});
 const Teachers = DBTable.find((table) => table.id === "teachers").data_rows.map(({ id, lastname, short }) => ({ id, lastname, short }));
 const getLessonSchedule = (lessonid) => {
-	let lessons = Lessons.filter((less) => less.subjectid === lessonid && less.classids.includes(localStorage.getItem("grade") === "1" ? "-188" : "-189")).map((less) => less.id);
+	const classID = localStorage.getItem("grade") === "1" ? Classes["grade 11"] : Classes["grade 12"];
+	let lessons = Lessons.filter((less) => less.subjectid === lessonid && less.classids.includes(classID)).map((less) => less.id);
 	return Cards.filter((card) => lessons.includes(card.lessonid));
 };
 
 if (process.env.NODE_ENV === "development") {
-	const variables = { ResponseData, NextSeven, DBTable, Lessons, Cards, Subjects, Teachers, getLessonSchedule };
+	const variables = { ResponseData, NextSeven, DBTable, Lessons, Cards, Subjects, Teachers, getLessonSchedule, Classes };
 	for (let key in variables) window[key] = variables[key];
 	console.log("%cDevelopment Mode Detected! Variables Exposed!", "color: cyan");
 }
@@ -166,7 +168,7 @@ function Table() {
 					<th></th>
 					{Heading.map((head) => (
 						<th key={head.starttime}>
-							<h1>{head.name}</h1>
+							<h1>{head.short}</h1>
 							<span>
 								{head.starttime} - {head.endtime}
 							</span>
