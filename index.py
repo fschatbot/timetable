@@ -50,8 +50,8 @@ else:
 
 # Dealing with the google calendar to create the weekly, monthly and all event file with the date and their days
 ical_url = 'https://calendar.google.com/calendar/ical/fountainheadschools.org_0emneups26ttn44bkg00lpji7s%40group.calendar.google.com/public/basic.ics'
-# dayRegexr = r'^[dD](?:ay|AY)? ?([1-6])$' # The calendar tends to follow the D[1-6] rule but you never know
-dayRegexr = r'^D[1-6]$'
+# dayRegexr = r'^d(ay)? ?[1-6]$' # This one adds additional matching formats of D [1-6] and Day[1-6]. However, they are not yet used.
+dayRegexr = r'^d(ay )?[1-6]$' # The current matching format is Day [1-6] and D[1-6].
 
 resp = requests.get(ical_url).text
 print('[+] Fetched Calendar Data')
@@ -69,7 +69,7 @@ print('[+] Calculated the date range')
 events = []
 
 for event in cal.walk('VEVENT'):
-	if not re.match(dayRegexr, event.get('SUMMARY', '')): continue # Remove all without the D[1-6] name
+	if not re.match(dayRegexr, event.get('SUMMARY', '').casefold()): continue # Remove all without the D[1-6] name
 	if event.get('DTSTART').params['VALUE'] != 'DATE': continue # Remove all non day events
 
 	# Getting the simple (unimportant) bits
@@ -77,14 +77,14 @@ for event in cal.walk('VEVENT'):
 	end = event.get('DTEND')
 	summary = event.get('SUMMARY')
 
-	events.append({'day': summary[1], 'date': start.dt})
+	events.append({'day': summary[-1], 'date': start.dt})
 
 print('[+] Extracted Important Calendar Data')
 
 week = []
 NextSeven = []
-month = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
-all = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': []}
+month = {str(x): [] for x in range(1, 7)}
+all = {str(x): [] for x in range(1, 7)}
 
 for event in sorted(events, key=lambda x: x['date']):
 	day = event['day']
