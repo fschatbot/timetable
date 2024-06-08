@@ -44,6 +44,7 @@ function preset(preset, date) {
 }
 let today = preset("DD/MM/YYYY", new Date());
 let currDay = NextSeven.find((day) => day.date === today)?.day;
+let Upcoming = NextSeven.filter((day) => new Date(day.date) > new Date())[0]?.day;
 
 function Result({ subject }) {
 	const { slots, removeSlot, addSlot } = useContext(SlotContext);
@@ -165,7 +166,7 @@ function Table() {
 		<table>
 			<thead>
 				<tr>
-					<th></th>
+					<th className="align-bottom">Next: D{Upcoming || "#"}</th>
 					{Heading.map((head) => (
 						<th key={head.starttime}>
 							<h1>{head.short}</h1>
