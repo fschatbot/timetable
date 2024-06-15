@@ -42,9 +42,15 @@ function preset(preset, date) {
 		.replace(/YYYY/g, date.getFullYear())
 		.replace(/DD/g, t(date.getDate()));
 }
+
+function toDate(dateString) {
+  const [day, month, year] = dateString.split('/');
+  return new Date(year, month-1, day);
+};
+
 let today = preset("DD/MM/YYYY", new Date());
 let currDay = NextSeven.find((day) => day.date === today)?.day;
-let Upcoming = NextSeven.filter((day) => new Date(day.date) > new Date())[0]?.day;
+let Upcoming = NextSeven.filter((day) => toDate(day.date) > new Date())[0]?.day;
 
 function Result({ subject }) {
 	const { slots, removeSlot, addSlot } = useContext(SlotContext);
