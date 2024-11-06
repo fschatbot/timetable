@@ -21,7 +21,7 @@ print('[+] Created the API directory')
 
 # Dealing with the timetable API and simplifying the data
 year = date.today().year
-DP_CALENDAR_ID = 110
+DP_CALENDAR_ID = 120
 
 try:
 	ttviewer = requests.post('https://fountainheadschool.edupage.org/timetable/server/ttviewer.js?__func=getTTViewerData', json={"__args":[None, year],"__gsh":"00000000"})
