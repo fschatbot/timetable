@@ -36,9 +36,14 @@ try:
 except exceptions.ConnectionError:
 	print(f'[red bold][-] Connection Error! Restorting to the default value: {DP_CALENDAR_ID}')
 
+try:
+	resp = requests.post('https://fountainheadschool.edupage.org/timetable/server/regulartt.js?__func=regularttGetData', json={"__args":[None, str(DP_CALENDAR_ID)],"__gsh":"00000000"})
+	data = resp.json()
+except exceptions.ConnectionError:
+	print(f'[red bold][-] Connection Error! Using the last fetched data')
+	resp = requests.get(f'https://fschatbot.github.io/timetable/api/timetable.json')
+	data = resp.json()
 
-resp = requests.post('https://fountainheadschool.edupage.org/timetable/server/regulartt.js?__func=regularttGetData', json={"__args":[None, str(DP_CALENDAR_ID)],"__gsh":"00000000"})
-data = resp.json()
 if data['r'].get('error'):
 	print(f'[red bold][-] Error: {data["r"]["error"]}! Timetable will not be updated')
 else:
